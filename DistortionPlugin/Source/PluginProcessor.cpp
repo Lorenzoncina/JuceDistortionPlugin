@@ -21,10 +21,11 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+					audioTree(*this, nullptr)
 #endif
 {
-	gainInput = new AudioParameterFloat("Gaininput", "gainInputParam", 0, 1, 0.5 );
+	/*gainInput = new AudioParameterFloat("Gaininput", "gainInputParam", 0, 1, 0.5 );
 	addParameter(gainInput);
 	parameterInputGainSmoothed = gainInput->get();
 
@@ -33,6 +34,14 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
 
 	toneControlle = new AudioParameterFloat("ToneControlle", "toneControlle", 5000, 15000, 6000);
 	addParameter(toneControlle);
+	*/
+	NormalisableRange <float> inputGainNormRange(0.0, 1.0);
+	NormalisableRange <float> outputGainNormRange(0.0, 1.0);
+	NormalisableRange <float> toneControlleNormRange(5000, 15000);
+	audioTree.createAndAddParameter("InputGain_ID", "InputGain", "Input Gain", inputGainNormRange,0.5, nullptr,nullptr);
+	audioTree.createAndAddParameter("OutputGain_ID","OutputGain" ,"Output Gain", outputGainNormRange, 0.5, nullptr, nullptr);
+	audioTree.createAndAddParameter("ToneControlle_ID", "ToneControlle", "Tone Controlle", toneControlleNormRange, 5000, nullptr,nullptr);
+
 }
 
 DistortionPluginAudioProcessor::~DistortionPluginAudioProcessor()
@@ -152,7 +161,8 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 	auto* channelDataRight = buffer.getWritePointer(1);
 
 	for (int i = 0; i < buffer.getNumSamples(); i++) {
-		parameterInputGainSmoothed = parameterInputGainSmoothed - 0.004*(parameterInputGainSmoothed - gainInput->get());
+		float* value = audioTree.getRawParameterValue("InputGain_ID");
+		parameterInputGainSmoothed = parameterInputGainSmoothed - 0.004*(parameterInputGainSmoothed - *value);
 		channelDataLeft[i] *= parameterInputGainSmoothed;
 		channelDataRight[i] *= parameterInputGainSmoothed;
 	}

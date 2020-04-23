@@ -45,7 +45,10 @@ private:
 	
 	ComboBox comboDistortioType;
 	Label comboLabel;
-	
+
+	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachInputGain;
+	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachOutputGain;
+	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachToneControlle;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPluginAudioProcessorEditor)
 };

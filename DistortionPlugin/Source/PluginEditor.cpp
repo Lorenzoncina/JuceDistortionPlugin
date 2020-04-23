@@ -19,40 +19,45 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	//setResizable(true, true);
 	setSize(600, 400);
 
-	auto& params = processor.getParameters();
+	/*auto& params = processor.getParameters();
 	AudioParameterFloat* inputGainParameter = (AudioParameterFloat*)params.getUnchecked(0);
 	AudioParameterFloat* outputGainParameter = (AudioParameterFloat*)params.getUnchecked(1);
 	AudioParameterFloat* toneControlleParameter = (AudioParameterFloat*)params.getUnchecked(2);
+	*/
 
 	// Input Gain
-	inputGain.setRange(inputGainParameter->range.start, inputGainParameter->range.end);
-	inputGain.setValue(inputGainParameter->get());
+	/*inputGain.setRange(inputGainParameter->range.start, inputGainParameter->range.end);
+	inputGain.setValue(inputGainParameter->get());*/
 	inputGain.setSliderStyle(Slider::SliderStyle::Rotary);
 	inputGain.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	inputGain.addListener(this);
 	inputGainLabel.setText("Input Gain", dontSendNotification);
 	addAndMakeVisible(inputGain);
 	addAndMakeVisible(inputGainLabel);
+	sliderAttachInputGain = new AudioProcessorValueTreeState::SliderAttachment(processor.audioTree, "InputGain_ID", inputGain);
 
 	// Output Gain
-	outputGain.setRange(outputGainParameter->range.start, outputGainParameter->range.end);
-	outputGain.setValue(outputGainParameter->get());
+	/*outputGain.setRange(outputGainParameter->range.start, outputGainParameter->range.end);
+	outputGain.setValue(outputGainParameter->get());*/
 	outputGain.setSliderStyle(Slider::SliderStyle::Rotary);
 	outputGain.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	outputGain.addListener(this);
 	outputGainLabel.setText("Output Gain", dontSendNotification);
 	addAndMakeVisible(outputGain);
 	addAndMakeVisible(outputGainLabel);
+	sliderAttachOutputGain = new AudioProcessorValueTreeState::SliderAttachment(processor.audioTree, "OutputGain_ID", outputGain);
 
 	// Tone Controlle
-	toneControlle.setRange(toneControlleParameter->range.start, toneControlleParameter->range.end);
+	/*toneControlle.setRange(toneControlleParameter->range.start, toneControlleParameter->range.end);
 	toneControlle.setValue(toneControlleParameter->get());
+	*/
 	toneControlle.setSliderStyle(Slider::SliderStyle::Rotary);
 	toneControlle.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	toneControlle.addListener(this);
 	toneControlleLabel.setText("Tone Controlle", dontSendNotification);
 	addAndMakeVisible(toneControlle);
 	addAndMakeVisible(toneControlleLabel);
+	sliderAttachToneControlle  = new AudioProcessorValueTreeState::SliderAttachment(processor.audioTree, "ToneControlle_ID", toneControlle);
 
 	// Combo menù
 	comboDistortioType.addItem("Soft quadratic clipping",1);
@@ -100,7 +105,7 @@ void DistortionPluginAudioProcessorEditor::resized()
 
 void DistortionPluginAudioProcessorEditor::sliderValueChanged(Slider *slider)
 {
-	auto& params = processor.getParameters();
+	/*auto& params = processor.getParameters();
 	if (slider == &inputGain) {
 		AudioParameterFloat* inputGainParameter = (AudioParameterFloat*)params.getUnchecked(0);
 		*inputGainParameter = inputGain.getValue();
@@ -112,5 +117,5 @@ void DistortionPluginAudioProcessorEditor::sliderValueChanged(Slider *slider)
 	else if (slider == &toneControlle) {
 		AudioParameterFloat* toneControlleParameter = (AudioParameterFloat*)params.getUnchecked(2);
 		*toneControlleParameter = toneControlle.getValue();
-	}
+	}*/
 }
