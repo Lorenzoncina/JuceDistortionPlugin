@@ -57,5 +57,10 @@ public:
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPluginAudioProcessor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DistortionPluginAudioProcessor)
+
+	AudioParameterFloat* gainInput;
+	AudioParameterFloat* gainOutput;
+	AudioParameterFloat* toneControlle;
+	float parameterInputGainSmoothed;
 };

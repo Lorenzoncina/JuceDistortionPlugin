@@ -16,7 +16,8 @@
 //==============================================================================
 /**
 */
-class DistortionPluginAudioProcessorEditor  : public AudioProcessorEditor
+class DistortionPluginAudioProcessorEditor  : public AudioProcessorEditor,
+											  public Slider::Listener
 {
 public:
     DistortionPluginAudioProcessorEditor (DistortionPluginAudioProcessor&);
@@ -26,10 +27,25 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 
+	void sliderValueChanged(Slider *slider);
+
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     DistortionPluginAudioProcessor& processor;
+
+	Slider inputGain;
+	Label inputGainLabel;
+
+	Slider outputGain;
+	Label outputGainLabel;
+
+	Slider toneControlle;
+	Label toneControlleLabel;
+	
+	ComboBox comboDistortioType;
+	Label comboLabel;
+	
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPluginAudioProcessorEditor)
 };

@@ -24,6 +24,15 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
                        )
 #endif
 {
+	gainInput = new AudioParameterFloat("Gaininput", "gainInputParam", 0, 1, 0.5 );
+	addParameter(gainInput);
+	parameterInputGainSmoothed = gainInput->get();
+
+	gainOutput = new AudioParameterFloat("GainOutput", "gainOutputParam", 0, 1, 0.5);
+	addParameter(gainOutput);
+
+	toneControlle = new AudioParameterFloat("ToneControlle", "toneControlle", 5000, 15000, 6000);
+	addParameter(toneControlle);
 }
 
 DistortionPluginAudioProcessor::~DistortionPluginAudioProcessor()
@@ -138,13 +147,17 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+	
+	auto* channelDataLeft = buffer.getWritePointer(0);
+	auto* channelDataRight = buffer.getWritePointer(1);
 
-        // ..do something to the data...
-    }
+	for (int i = 0; i < buffer.getNumSamples(); i++) {
+		parameterInputGainSmoothed = parameterInputGainSmoothed - 0.004*(parameterInputGainSmoothed - gainInput->get());
+		channelDataLeft[i] *= parameterInputGainSmoothed;
+		channelDataRight[i] *= parameterInputGainSmoothed;
+	}
+
+
 }
 
 //==============================================================================
