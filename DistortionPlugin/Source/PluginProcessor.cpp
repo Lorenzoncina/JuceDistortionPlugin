@@ -25,23 +25,14 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
 					audioTree(*this, nullptr)
 #endif
 {
-	/*gainInput = new AudioParameterFloat("Gaininput", "gainInputParam", 0, 1, 0.5 );
-	addParameter(gainInput);
-	parameterInputGainSmoothed = gainInput->get();
-
-	gainOutput = new AudioParameterFloat("GainOutput", "gainOutputParam", 0, 1, 0.5);
-	addParameter(gainOutput);
-
-	toneControlle = new AudioParameterFloat("ToneControlle", "toneControlle", 5000, 15000, 6000);
-	addParameter(toneControlle);
-	*/
-	NormalisableRange <float> inputGainNormRange(0.0, 1.0);
+	
+	NormalisableRange <float> inputGainNormRange(1.0, 10.0);
 	NormalisableRange <float> outputGainNormRange(0.0, 1.0);
 	NormalisableRange <float> toneControlleNormRange(5000, 15000);
-	audioTree.createAndAddParameter("InputGain_ID", "InputGain", "Input Gain", inputGainNormRange,0.5, nullptr,nullptr);
-	audioTree.createAndAddParameter("OutputGain_ID","OutputGain" ,"Output Gain", outputGainNormRange, 0.5, nullptr, nullptr);
+	audioTree.createAndAddParameter("InputGain_ID", "InputGain", "Input Gain", inputGainNormRange,1.0, nullptr,nullptr);
+	audioTree.createAndAddParameter("OutputGain_ID","OutputGain" ,"Output Gain", outputGainNormRange, 1.0, nullptr, nullptr);
 	audioTree.createAndAddParameter("ToneControlle_ID", "ToneControlle", "Tone Controlle", toneControlleNormRange, 5000, nullptr,nullptr);
-
+	distortionType = 1;
 }
 
 DistortionPluginAudioProcessor::~DistortionPluginAudioProcessor()
@@ -156,15 +147,72 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-	
-	auto* channelDataLeft = buffer.getWritePointer(0);
-	auto* channelDataRight = buffer.getWritePointer(1);
+	int intDistortionType = 0;
+	for (int channel = 0; channel < buffer.getNumChannels(); channel++) {
+		auto* channelData = buffer.getWritePointer(channel);
+		for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
+			//Input Gain
+			float* gainInput = audioTree.getRawParameterValue("InputGain_ID");
+			const float in = channelData[sample] * *gainInput;
 
-	for (int i = 0; i < buffer.getNumSamples(); i++) {
-		float* value = audioTree.getRawParameterValue("InputGain_ID");
-		parameterInputGainSmoothed = parameterInputGainSmoothed - 0.004*(parameterInputGainSmoothed - *value);
-		channelDataLeft[i] *= parameterInputGainSmoothed;
-		channelDataRight[i] *= parameterInputGainSmoothed;
+			//Distortion Type
+			float out;
+
+
+			if (distortionType== 1) {
+				// Simple hard clipping
+				float threshold = 1.0f;
+				if (in > threshold)
+					out = threshold;
+				else if (in < -threshold)
+					out = -threshold;
+				else
+					out = in;
+			}
+			else if (distortionType == 2) {
+				// Soft clipping based on quadratic function
+				float threshold1 = 1.0f / 3.0f;
+				float threshold2 = 2.0f / 3.0f;
+				if (in > threshold2)
+					out = 1.0f;
+				else if (in > threshold1)
+					out = (3.0f - (2.0f - 3.0f*in) *
+					(2.0f - 3.0f*in)) / 3.0f;
+				else if (in < -threshold2)
+					out = -1.0f;
+				else if (in < -threshold1)
+					out = -(3.0f - (2.0f + 3.0f*in) *
+					(2.0f + 3.0f*in)) / 3.0f;
+				else
+					out = 2.0f* in;
+			}
+			else if (distortionType == 3)
+			{
+				// Soft clipping based on exponential function
+				if (in > 0)
+					out = 1.0f - expf(-in);
+				else
+					out = -1.0f + expf(in);
+			}
+			else if (distortionType == 4) {
+				// Full-wave rectifier (absolute value)
+				out = fabsf(in);
+			}
+			else if (distortionType == 5) {
+				// Half-wave rectifier
+				if (in > 0)
+					out = in;
+				else
+					out = 0;
+			}
+
+			//Tone Controlle
+
+			//Output Gain
+			float* value = audioTree.getRawParameterValue("OutputGain_ID");
+			parameterOutputGainSmoothed = parameterOutputGainSmoothed - 0.004*(parameterOutputGainSmoothed - *value);
+			channelData[sample] = out * parameterOutputGainSmoothed;
+		}
 	}
 
 

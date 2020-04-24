@@ -17,7 +17,8 @@
 /**
 */
 class DistortionPluginAudioProcessorEditor  : public AudioProcessorEditor,
-											  public Slider::Listener
+											  public Slider::Listener,
+											  public ComboBox::Listener
 {
 public:
     DistortionPluginAudioProcessorEditor (DistortionPluginAudioProcessor&);
@@ -27,7 +28,8 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 
-	void sliderValueChanged(Slider *slider);
+	void sliderValueChanged(Slider *slider) override;
+	void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -49,6 +51,7 @@ private:
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachInputGain;
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachOutputGain;
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachToneControlle;
+	ScopedPointer <AudioProcessorValueTreeState::ComboBoxAttachment> sliderAttachCombo;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPluginAudioProcessorEditor)
 };

@@ -56,14 +56,11 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	AudioProcessorValueTreeState audioTree;
+	int distortionType;
 private:
     //==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DistortionPluginAudioProcessor)
 
-	/*AudioParameterFloat* gainInput;
-	AudioParameterFloat* gainOutput;
-	AudioParameterFloat* toneControlle;
-	*/
-	float parameterInputGainSmoothed;
-	
+	float parameterOutputGainSmoothed;
+
 };
