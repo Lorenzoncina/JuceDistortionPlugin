@@ -22,16 +22,29 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
                        ),
-					audioTree(*this, nullptr)
+					audioTree(*this, nullptr, Identifier("PARAMETERS"),
+						{ std::make_unique<AudioParameterFloat>("InputGain_ID","InputGain",NormalisableRange<float>(1.0, 10.0,0.1),1.0),
+						  std::make_unique<AudioParameterFloat>("OutputGain_ID","OutputGain",NormalisableRange<float>(0.0, 1.0,0.1),0),
+						  std::make_unique<AudioParameterFloat>("ToneControlle_ID","ToneControlle",NormalisableRange<float>(5000, 150000,10),0)
+						})
 #endif
 {
-	
+	/*
 	NormalisableRange <float> inputGainNormRange(1.0, 10.0);
 	NormalisableRange <float> outputGainNormRange(0.0, 1.0);
 	NormalisableRange <float> toneControlleNormRange(5000, 15000);
-	audioTree.createAndAddParameter("InputGain_ID", "InputGain", "Input Gain", inputGainNormRange,1.0, nullptr,nullptr);
+	*/
+	//Deprecated
+	/*audioTree.createAndAddParameter("InputGain_ID", "InputGain", "Input Gain", inputGainNormRange,1.0, nullptr,nullptr);
 	audioTree.createAndAddParameter("OutputGain_ID","OutputGain" ,"Output Gain", outputGainNormRange, 1.0, nullptr, nullptr);
 	audioTree.createAndAddParameter("ToneControlle_ID", "ToneControlle", "Tone Controlle", toneControlleNormRange, 5000, nullptr,nullptr);
+	*/
+	
+	audioTree.addParameterListener("InputGain_ID", this);
+	audioTree.addParameterListener("OutputGain_ID", this);
+	audioTree.addParameterListener("ToneControlle_ID", this);
+
+
 	distortionType = 1;
 }
 
@@ -138,6 +151,23 @@ bool DistortionPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& 
 }
 #endif
 
+
+void DistortionPluginAudioProcessor::parameterChanged(const String &parameterID, float newValue)
+{
+	//Parameters update  when sliders moved
+	if (parameterID=="InputGain_ID") {
+		inputGainValue = newValue;
+	}
+	else if (parameterID =="OutputGain_ID") {
+		outputGainValue = newValue;
+	}
+	else if (parameterID =="ToneControlle_ID") {
+		toneControlleValue = newValue;
+	}
+
+
+}
+
 void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
@@ -152,8 +182,8 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 		auto* channelData = buffer.getWritePointer(channel);
 		for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
 			//Input Gain
-			float* gainInput = audioTree.getRawParameterValue("InputGain_ID");
-			const float in = channelData[sample] * *gainInput;
+			//float* gainInput = audioTree.getRawParameterValue("InputGain_ID");
+			const float in = channelData[sample] * inputGainValue;
 
 			//Distortion Type
 			float out;
@@ -209,8 +239,8 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 			//Tone Controlle
 
 			//Output Gain
-			float* value = audioTree.getRawParameterValue("OutputGain_ID");
-			parameterOutputGainSmoothed = parameterOutputGainSmoothed - 0.004*(parameterOutputGainSmoothed - *value);
+			//float* value = audioTree.getRawParameterValue("OutputGain_ID");
+			parameterOutputGainSmoothed = parameterOutputGainSmoothed - 0.004*(parameterOutputGainSmoothed - outputGainValue);
 			channelData[sample] = out * parameterOutputGainSmoothed;
 		}
 	}
@@ -226,7 +256,7 @@ bool DistortionPluginAudioProcessor::hasEditor() const
 
 AudioProcessorEditor* DistortionPluginAudioProcessor::createEditor()
 {
-    return new DistortionPluginAudioProcessorEditor (*this);
+    return new DistortionPluginAudioProcessorEditor (*this, audioTree);
 }
 
 //==============================================================================
@@ -249,3 +279,5 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new DistortionPluginAudioProcessor();
 }
+
+

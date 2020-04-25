@@ -47,7 +47,7 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	addAndMakeVisible(toneControlleLabel);
 	sliderAttachToneControlle.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "ToneControlle_ID", toneControlle));
 
-	// Combo menù
+	// Combo menÃ¹
 	comboDistortioType.addItem("Hard clipping", 1);
 	comboDistortioType.addItem("Soft clipping", 2);
 	comboDistortioType.addItem("Exponential", 3);

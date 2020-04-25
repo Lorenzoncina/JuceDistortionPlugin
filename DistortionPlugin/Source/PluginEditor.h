@@ -50,10 +50,16 @@ private:
 	Label comboLabel;
 
 	//Scoped Pointer must be declared later than the correspong sliders
+	/*
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachInputGain;
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachOutputGain;
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachToneControlle;
 	ScopedPointer <AudioProcessorValueTreeState::ComboBoxAttachment> sliderAttachCombo;
+	*/
+
+	std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> sliderAttachInputGain;
+	std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> sliderAttachOutputGain;
+	std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> sliderAttachToneControlle;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPluginAudioProcessorEditor)
 };

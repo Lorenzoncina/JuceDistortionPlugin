@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="NMhz9d" name="DistortionPlugin" projectType="audioplug" jucerVersion="5.3.2">
+<JUCERPROJECT id="NMhz9d" name="DistortionPlugin" projectType="audioplug" jucerVersion="5.4.7"
+              pluginFormats="buildVST3">
   <MAINGROUP id="cUpjDc" name="DistortionPlugin">
     <GROUP id="{C650BB72-D2E7-DB63-A62B-2D5411041CFE}" name="Source">
       <FILE id="QJq4qQ" name="PluginProcessor.cpp" compile="1" resource="0"

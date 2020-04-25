@@ -15,7 +15,8 @@
 //==============================================================================
 /**
 */
-class DistortionPluginAudioProcessor  : public AudioProcessor
+class DistortionPluginAudioProcessor  : public AudioProcessor,
+										public AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -55,12 +56,16 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+	void parameterChanged(const String &parameterID, float newValue) override;
+
 	AudioProcessorValueTreeState audioTree;
 	int distortionType;
+	
 private:
     //==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DistortionPluginAudioProcessor)
 
 	float parameterOutputGainSmoothed;
+	float inputGainValue, outputGainValue, toneControlleValue;
 
 };
