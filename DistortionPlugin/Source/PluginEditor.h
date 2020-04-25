@@ -21,7 +21,7 @@ class DistortionPluginAudioProcessorEditor  : public AudioProcessorEditor,
 											  public ComboBox::Listener
 {
 public:
-    DistortionPluginAudioProcessorEditor (DistortionPluginAudioProcessor&);
+    DistortionPluginAudioProcessorEditor (DistortionPluginAudioProcessor&, AudioProcessorValueTreeState&);
     ~DistortionPluginAudioProcessorEditor();
 
     //==============================================================================
@@ -35,6 +35,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     DistortionPluginAudioProcessor& processor;
+	AudioProcessorValueTreeState& audioTree;
 
 	Slider inputGain;
 	Label inputGainLabel;
@@ -48,6 +49,7 @@ private:
 	ComboBox comboDistortioType;
 	Label comboLabel;
 
+	//Scoped Pointer must be declared later than the correspong sliders
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachInputGain;
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachOutputGain;
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttachToneControlle;

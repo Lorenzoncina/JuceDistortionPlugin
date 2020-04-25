@@ -12,10 +12,9 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (DistortionPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (DistortionPluginAudioProcessor& p, AudioProcessorValueTreeState& vts)
+    : AudioProcessorEditor (&p), processor (p), audioTree(vts)
 {
-    
 	//setResizable(true, true);
 	setSize(600, 400);
 
@@ -28,7 +27,7 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	inputGainLabel.setText("Input Gain", dontSendNotification);
 	addAndMakeVisible(inputGain);
 	addAndMakeVisible(inputGainLabel);
-	sliderAttachInputGain = new AudioProcessorValueTreeState::SliderAttachment(processor.audioTree, "InputGain_ID", inputGain);
+	sliderAttachInputGain.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "InputGain_ID", inputGain));
 
 	// Output Gain
 	outputGain.setSliderStyle(Slider::SliderStyle::Rotary);
@@ -37,7 +36,7 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	outputGainLabel.setText("Output Gain", dontSendNotification);
 	addAndMakeVisible(outputGain);
 	addAndMakeVisible(outputGainLabel);
-	sliderAttachOutputGain = new AudioProcessorValueTreeState::SliderAttachment(processor.audioTree, "OutputGain_ID", outputGain);
+	sliderAttachOutputGain.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "OutputGain_ID", outputGain));
 
 	// Tone Controlle
 	toneControlle.setSliderStyle(Slider::SliderStyle::Rotary);
@@ -46,7 +45,7 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	toneControlleLabel.setText("Tone Controlle", dontSendNotification);
 	addAndMakeVisible(toneControlle);
 	addAndMakeVisible(toneControlleLabel);
-	sliderAttachToneControlle  = new AudioProcessorValueTreeState::SliderAttachment(processor.audioTree, "ToneControlle_ID", toneControlle);
+	sliderAttachToneControlle.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "ToneControlle_ID", toneControlle));
 
 	// Combo menù
 	comboDistortioType.addItem("Hard clipping", 1);
@@ -58,11 +57,14 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	comboLabel.attachToComponent(&comboDistortioType, true);
 	comboDistortioType.addListener(this);
 	addAndMakeVisible(comboDistortioType);
-	
 }
 
 DistortionPluginAudioProcessorEditor::~DistortionPluginAudioProcessorEditor()
 {
+	//distruggere i puntatori 
+	sliderAttachInputGain.reset();
+	sliderAttachOutputGain.reset();
+	sliderAttachToneControlle.reset();
 }
 
 //==============================================================================
