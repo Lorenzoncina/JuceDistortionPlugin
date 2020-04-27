@@ -60,6 +60,8 @@ public:
 
 	AudioProcessorValueTreeState audioTree;
 	int distortionType;
+
+	std::unique_ptr<dsp::Oversampling<float>> oversampling;
 	
 private:
     //==============================================================================
@@ -67,5 +69,7 @@ private:
 
 	float parameterOutputGainSmoothed;
 	float inputGainValue, outputGainValue, toneControlleValue;
+	std::size_t numChan = 2;
+	std::size_t fact = 2;
 
 };
