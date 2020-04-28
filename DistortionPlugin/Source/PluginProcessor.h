@@ -57,6 +57,8 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	void parameterChanged(const String &parameterID, float newValue) override;
+	
+	void updateFilter();
 
 	AudioProcessorValueTreeState audioTree;
 	int distortionType;
@@ -71,5 +73,6 @@ private:
 	float inputGainValue, outputGainValue, toneControlleValue;
 	std::size_t numChan = 2;
 	std::size_t fact = 2;
+	dsp::ProcessorDuplicator< dsp::IIR::Filter <float>, dsp::IIR::Coefficients<float>> lowPassFilter;
 
 };

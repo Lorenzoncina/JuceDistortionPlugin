@@ -23,11 +23,11 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
                      #endif
                        ),
 					audioTree(*this, nullptr, Identifier("PARAMETERS"),
-						{ std::make_unique<AudioParameterFloat>("InputGain_ID","InputGain",NormalisableRange<float>(1.0, 10.0,0.1),1.0),
-						  std::make_unique<AudioParameterFloat>("OutputGain_ID","OutputGain",NormalisableRange<float>(0.0, 1.0,0.1),0),
-						  std::make_unique<AudioParameterFloat>("ToneControlle_ID","ToneControlle",NormalisableRange<float>(5000, 150000,10),0)
-						})
-					//overSample(2, 2, dsp::Oversampling<float>::FilterType::filterHalfBandPolyphaseIIR, true)
+						{ std::make_unique<AudioParameterFloat>("InputGain_ID","InputGain",NormalisableRange<float>(0.0, 48.0,0.1),0.0),
+						  std::make_unique<AudioParameterFloat>("OutputGain_ID","OutputGain",NormalisableRange<float>(-48.0,0.0,0.1),0.0),
+						  std::make_unique<AudioParameterFloat>("ToneControlle_ID","ToneControlle",NormalisableRange<float>(20.0, 20000.0, 6.0),10000)
+						}),
+					lowPassFilter(dsp::IIR::Coefficients< float >::makeLowPass(44100, 20000.0))
 					
 #endif
 {
@@ -37,11 +37,16 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
 	audioTree.addParameterListener("ToneControlle_ID", this);
 	oversampling.reset(new dsp::Oversampling<float>(2, 2, dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, false));
 
+	inputGainValue = 1.0;
+	outputGainValue = 1.0;
+	toneControlleValue = 10000;
+
 	distortionType = 1;
 }
 
 DistortionPluginAudioProcessor::~DistortionPluginAudioProcessor()
 {
+	oversampling.reset();
 }
 
 //==============================================================================
@@ -111,7 +116,15 @@ void DistortionPluginAudioProcessor::prepareToPlay (double sampleRate, int sampl
 {
 	oversampling->reset();
 	oversampling->initProcessing(static_cast<size_t> (samplesPerBlock));
-	//overSample.initProcessing(samplesPerBlock);
+
+	dsp::ProcessSpec spec;
+	spec.sampleRate = sampleRate;
+	spec.maximumBlockSize = samplesPerBlock;
+	spec.numChannels = getTotalNumOutputChannels();
+
+	lowPassFilter.prepare(spec);
+	lowPassFilter.reset();
+
 }
 
 void DistortionPluginAudioProcessor::releaseResources()
@@ -149,16 +162,25 @@ void DistortionPluginAudioProcessor::parameterChanged(const String &parameterID,
 {
 	//Parameters update  when sliders moved
 	if (parameterID=="InputGain_ID") {
-		inputGainValue = newValue;
+		//in db
+		inputGainValue = pow(10, newValue / 20);
+		//inputGainValue = newValue;
 	}
 	else if (parameterID =="OutputGain_ID") {
-		outputGainValue = newValue;
+		//in db
+		outputGainValue = pow(10, newValue / 20);
+		
 	}
 	else if (parameterID =="ToneControlle_ID") {
 		toneControlleValue = newValue;
 	}
 
 
+}
+
+void DistortionPluginAudioProcessor::updateFilter()
+{
+	*lowPassFilter.state = *dsp::IIR::Coefficients<float>::makeLowPass(44100, toneControlleValue);
 }
 
 void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -173,8 +195,6 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 
 	dsp::AudioBlock<float> blockInput(buffer);
 	dsp::AudioBlock<float> blockOutput = oversampling->processSamplesUp(blockInput);
-
-	int intDistortionType = 0;
 
 
 	for (int channel = 0; channel < blockOutput.getNumChannels(); channel++) {
@@ -239,11 +259,14 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 		}
 	}
 
-	//Maybe LowPassFilter
+	
 
 	//DownSampling
 	oversampling->processSamplesDown(blockInput);
 
+	//lowPassFilter
+	updateFilter();
+	lowPassFilter.process(dsp::ProcessContextReplacing<float>(blockInput));
 
 	//Distorsione sul Buffer (non upsampled)
 	/*

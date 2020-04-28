@@ -24,6 +24,7 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	inputGain.setSliderStyle(Slider::SliderStyle::Rotary);
 	inputGain.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	inputGain.addListener(this);
+	inputGain.setTextBoxStyle(Slider::TextBoxBelow, true, 90, 19);
 	inputGainLabel.setText("Input Gain", dontSendNotification);
 	addAndMakeVisible(inputGain);
 	addAndMakeVisible(inputGainLabel);
@@ -33,7 +34,7 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	outputGain.setSliderStyle(Slider::SliderStyle::Rotary);
 	outputGain.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	outputGain.addListener(this);
-	outputGainLabel.setText("Output Gain", dontSendNotification);
+	outputGainLabel.setText("Volume", dontSendNotification);
 	addAndMakeVisible(outputGain);
 	addAndMakeVisible(outputGainLabel);
 	sliderAttachOutputGain.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "OutputGain_ID", outputGain));
@@ -42,18 +43,21 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	toneControlle.setSliderStyle(Slider::SliderStyle::Rotary);
 	toneControlle.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	toneControlle.addListener(this);
+	toneControlle.setTextBoxStyle(Slider::TextBoxBelow, true, 90, 19);
 	toneControlleLabel.setText("Tone Controlle", dontSendNotification);
 	addAndMakeVisible(toneControlle);
 	addAndMakeVisible(toneControlleLabel);
 	sliderAttachToneControlle.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "ToneControlle_ID", toneControlle));
 
 	// Combo menù
+
 	comboDistortioType.addItem("Hard clipping", 1);
 	comboDistortioType.addItem("Soft clipping", 2);
 	comboDistortioType.addItem("Exponential", 3);
 	comboDistortioType.addItem("Full-wave rectifier", 4);
 	comboDistortioType.addItem("Half-wave rectifier", 5);
-	comboLabel.setText("Distortion type", dontSendNotification);
+	comboDistortioType.setSelectedId(1, dontSendNotification);
+	comboLabel.setText("Distortion Type", dontSendNotification);
 	comboLabel.attachToComponent(&comboDistortioType, true);
 	comboDistortioType.addListener(this);
 	addAndMakeVisible(comboDistortioType);
@@ -88,10 +92,10 @@ void DistortionPluginAudioProcessorEditor::resized()
 	//Rectangle<int> comboRect = top.remove
 	inputGain.setBounds(firstSlider);
 	inputGainLabel.setBounds(60,310,70,60);
-	outputGain.setBounds(secondSlider);
-	outputGainLabel.setBounds(260,310,80,60);
-	toneControlle.setBounds(thirdSliedr);
-	toneControlleLabel.setBounds(460,310,110,60);
+	toneControlle.setBounds(secondSlider);
+	toneControlleLabel.setBounds(260, 310, 80, 60);
+	outputGain.setBounds(thirdSliedr);
+	outputGainLabel.setBounds(460, 310, 110, 60);
 	comboDistortioType.setBounds(top);
 	comboDistortioType.setBounds(getWidth()/2 - getWidth()/4, 40,getWidth() / 2, getHeight() / 14);
 	
