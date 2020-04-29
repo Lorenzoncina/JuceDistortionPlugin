@@ -27,7 +27,7 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
 						  std::make_unique<AudioParameterFloat>("OutputGain_ID","OutputGain",NormalisableRange<float>(-48.0,0.0,0.1),0.0),
 						  std::make_unique<AudioParameterFloat>("ToneControlle_ID","ToneControlle",NormalisableRange<float>(20.0, 20000.0, 6.0),10000)
 						}),
-					lowPassFilter(dsp::IIR::Coefficients< float >::makeLowPass(44100, 20000.0))
+					lowPassFilter(dsp::IIR::Coefficients< float >::makeLowPass((44100*4), 20000.0))
 					
 #endif
 {
@@ -118,8 +118,9 @@ void DistortionPluginAudioProcessor::prepareToPlay (double sampleRate, int sampl
 	oversampling->initProcessing(static_cast<size_t> (samplesPerBlock));
 
 	dsp::ProcessSpec spec;
-	spec.sampleRate = sampleRate;
-	spec.maximumBlockSize = samplesPerBlock;
+	//Sample Rate of the filter must be 4 times because the Oversampling
+	spec.sampleRate = sampleRate*4;
+	spec.maximumBlockSize = samplesPerBlock*3;
 	spec.numChannels = getTotalNumOutputChannels();
 
 	lowPassFilter.prepare(spec);
@@ -180,7 +181,8 @@ void DistortionPluginAudioProcessor::parameterChanged(const String &parameterID,
 
 void DistortionPluginAudioProcessor::updateFilter()
 {
-	*lowPassFilter.state = *dsp::IIR::Coefficients<float>::makeLowPass(44100, toneControlleValue);
+	float frequency = 44100 * 4;
+	*lowPassFilter.state = *dsp::IIR::Coefficients<float>::makeLowPass(frequency, toneControlleValue);
 }
 
 void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -251,7 +253,7 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 				else
 					out = 0;
 			}
-			//output gain
+			//output gain with smoothing
 			parameterOutputGainSmoothed = parameterOutputGainSmoothed - 0.004*(parameterOutputGainSmoothed - outputGainValue);
 			out *= parameterOutputGainSmoothed;
 			//Set the new sample in the audio block
@@ -260,79 +262,12 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 	}
 
 	
+	//lowPassFilter
+	updateFilter();
+	lowPassFilter.process(dsp::ProcessContextReplacing<float>(blockOutput));
 
 	//DownSampling
 	oversampling->processSamplesDown(blockInput);
-
-	//lowPassFilter
-	updateFilter();
-	lowPassFilter.process(dsp::ProcessContextReplacing<float>(blockInput));
-
-	//Distorsione sul Buffer (non upsampled)
-	/*
-	for (int channel = 0; channel < buffer.getNumChannels(); channel++) {
-		auto* channelData = buffer.getWritePointer(channel);
-		for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
-			//Input Gain
-			const float in = channelData[sample] * inputGainValue;
-
-			//Distortion Type
-			float out;
-			if (distortionType== 1) {
-				// Simple hard clipping
-				float threshold = 1.0f;
-				if (in > threshold)
-					out = threshold;
-				else if (in < -threshold)
-					out = -threshold;
-				else
-					out = in;
-			}
-			else if (distortionType == 2) {
-				// Soft clipping based on quadratic function
-				float threshold1 = 1.0f / 3.0f;
-				float threshold2 = 2.0f / 3.0f;
-				if (in > threshold2)
-					out = 1.0f;
-				else if (in > threshold1)
-					out = (3.0f - (2.0f - 3.0f*in) *
-					(2.0f - 3.0f*in)) / 3.0f;
-				else if (in < -threshold2)
-					out = -1.0f;
-				else if (in < -threshold1)
-					out = -(3.0f - (2.0f + 3.0f*in) *
-					(2.0f + 3.0f*in)) / 3.0f;
-				else
-					out = 2.0f* in;
-			}
-			else if (distortionType == 3)
-			{
-				// Soft clipping based on exponential function
-				if (in > 0)
-					out = 1.0f - expf(-in);
-				else
-					out = -1.0f + expf(in);
-			}
-			else if (distortionType == 4) {
-				// Full-wave rectifier (absolute value)
-				out = fabsf(in);
-			}
-			else if (distortionType == 5) {
-				// Half-wave rectifier
-				if (in > 0)
-					out = in;
-				else
-					out = 0;
-			}
-
-			//Tone Controlle
-
-			//Output Gain
-			parameterOutputGainSmoothed = parameterOutputGainSmoothed - 0.004*(parameterOutputGainSmoothed - outputGainValue);
-			channelData[sample] = out * parameterOutputGainSmoothed;
-		}
-	}
-	*/
 
 }
 
