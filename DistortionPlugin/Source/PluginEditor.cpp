@@ -16,39 +16,47 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
     : AudioProcessorEditor (&p), processor (p), audioTree(vts)
 {
 	//setResizable(true, true);
-	setSize(600, 400);
+	setSize(500, 350);
 
 	
 
 	// Input Gain
-	inputGain.setSliderStyle(Slider::SliderStyle::Rotary);
-	inputGain.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
+	inputGain.setSliderStyle(Slider::SliderStyle::LinearVertical);
 	inputGain.addListener(this);
-	inputGain.setTextBoxStyle(Slider::TextBoxBelow, true, 90, 19);
-	inputGainLabel.setText("Input Gain", dontSendNotification);
+	inputGain.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	addAndMakeVisible(inputGain);
-	addAndMakeVisible(inputGainLabel);
 	sliderAttachInputGain.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "InputGain_ID", inputGain));
+	inputGain.setLookAndFeel(&inputGainLookAndFeel);
+	inputGainLabel.setText("Input Gain", dontSendNotification);
+	inputGainLabel.setFont(Font("Strong Brain", 12, 1));
+	inputGainLabel.setColour(Label::textColourId, Colour(255, 6, 119));
+	addAndMakeVisible(inputGainLabel);
 
 	// Output Gain
-	outputGain.setSliderStyle(Slider::SliderStyle::Rotary);
+	outputGain.setSliderStyle(Slider::SliderStyle::LinearVertical);
 	outputGain.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	outputGain.addListener(this);
-	outputGainLabel.setText("Volume", dontSendNotification);
 	addAndMakeVisible(outputGain);
-	addAndMakeVisible(outputGainLabel);
 	sliderAttachOutputGain.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "OutputGain_ID", outputGain));
+	outputGain.setLookAndFeel(&outputGainLookAndFeel);
+	outputGainLabel.setText("Volume", dontSendNotification);
+	outputGainLabel.setFont(Font("Strong Brain", 12.0f, 1));
+	outputGainLabel.setColour(Label::textColourId, Colour(255, 6, 119));
+	addAndMakeVisible(outputGainLabel);
 
 	// Tone Controlle
 	toneControlle.setSliderStyle(Slider::SliderStyle::Rotary);
 	toneControlle.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	toneControlle.addListener(this);
-	toneControlle.setTextBoxStyle(Slider::TextBoxBelow, true, 90, 19);
-	toneControlleLabel.setText("Tone Controlle", dontSendNotification);
+	toneControlle.setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 	addAndMakeVisible(toneControlle);
-	addAndMakeVisible(toneControlleLabel);
 	sliderAttachToneControlle.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "ToneControlle_ID", toneControlle));
-
+	toneControlle.setLookAndFeel(&rotaryLookAndFeel);
+	cutOffLabel.setText("Tone Controlle", dontSendNotification);
+	cutOffLabel.setFont(Font("Strong Brain", 12.0f, 1));
+	cutOffLabel.setColour(Label::textColourId, Colour(255, 6, 119));
+	addAndMakeVisible(cutOffLabel);
+	
 	// Combo menù
 
 	comboDistortioType.addItem("Hard clipping", 1);
@@ -57,10 +65,11 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	comboDistortioType.addItem("Full-wave rectifier", 4);
 	comboDistortioType.addItem("Half-wave rectifier", 5);
 	comboDistortioType.setSelectedId(1, dontSendNotification);
-	comboLabel.setText("Distortion Type", dontSendNotification);
-	comboLabel.attachToComponent(&comboDistortioType, true);
+	comboDistortioType.setLookAndFeel(&comboBoxLookAndFeel);
 	comboDistortioType.addListener(this);
 	addAndMakeVisible(comboDistortioType);
+	comboDistortioType.setColour(ComboBox::textColourId, Colour(255, 6, 119));
+	comboDistortioType.setColour(ComboBox::arrowColourId, Colour(255, 6, 119));
 }
 
 DistortionPluginAudioProcessorEditor::~DistortionPluginAudioProcessorEditor()
@@ -69,36 +78,41 @@ DistortionPluginAudioProcessorEditor::~DistortionPluginAudioProcessorEditor()
 	sliderAttachInputGain.reset();
 	sliderAttachOutputGain.reset();
 	sliderAttachToneControlle.reset();
+
+	inputGain.setLookAndFeel(nullptr);
+	outputGain.setLookAndFeel(nullptr);
+	toneControlle.setLookAndFeel(nullptr);
+	comboDistortioType.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
 void DistortionPluginAudioProcessorEditor::paint (Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    // Background
+    g.fillAll (Colour(0, 81, 255));
+	
+	//Title
+    g.setColour (Colour(255, 6, 119));
+    g.setFont (Font("Strong Brain",35.0f,1));
+	Rectangle <int> title = getLocalBounds().removeFromTop(getHeight() / 5);
+	g.drawText("Distortion \'80", title, Justification::centred, true);
 
-    g.setColour (Colours::white);
-    g.setFont (15.0f);
+
+
+
 }
 
 void DistortionPluginAudioProcessorEditor::resized()
 {
-	Rectangle<int> area = getLocalBounds();
-	Rectangle<int> top = area.removeFromTop(getHeight() / 4);
-	Rectangle<int> bottom = area.removeFromBottom((getHeight() / 4) * 3);
-	Rectangle<int> firstSlider = bottom.removeFromLeft(getWidth() / 3);
-	Rectangle<int> secondSlider = bottom.removeFromLeft((getWidth() / 3));
-	Rectangle<int> thirdSliedr = bottom.removeFromRight(getWidth() / 3);
-	//Rectangle<int> comboRect = top.remove
-	inputGain.setBounds(firstSlider);
-	inputGainLabel.setBounds(60,310,70,60);
-	toneControlle.setBounds(secondSlider);
-	toneControlleLabel.setBounds(260, 310, 80, 60);
-	outputGain.setBounds(thirdSliedr);
-	outputGainLabel.setBounds(460, 310, 110, 60);
-	comboDistortioType.setBounds(top);
-	comboDistortioType.setBounds(getWidth()/2 - getWidth()/4, 40,getWidth() / 2, getHeight() / 14);
-	
+	comboDistortioType.setBounds((getWidth() / 2 - getWidth() / 4) + 5 , 120, getWidth() / 2, getHeight() / 14);
+	inputGain.setBounds(80, 87, 6, 220);
+	outputGain.setBounds(420,87,6,220);
+	toneControlle.setBounds(177,172,150,150);
+
+	inputGainLabel.setBounds(45, 310, 80, 40);
+	outputGainLabel.setBounds(395,310,60,40);
+	cutOffLabel.setBounds(213,310,80,40);
+
 }
 
 

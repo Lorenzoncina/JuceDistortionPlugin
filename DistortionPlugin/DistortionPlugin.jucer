@@ -10,6 +10,10 @@
       <FILE id="shvdiG" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="BlJmDA" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="FBDKAj" name="SliderLookAndFeel.h" compile="0" resource="0"
+            file="Source/SliderLookAndFeel.h"/>
+      <FILE id="qRSL6t" name="SliderLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/SliderLookAndFeel.cpp"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

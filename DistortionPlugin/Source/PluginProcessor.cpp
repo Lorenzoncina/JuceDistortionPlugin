@@ -23,8 +23,8 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
                      #endif
                        ),
 					audioTree(*this, nullptr, Identifier("PARAMETERS"),
-						{ std::make_unique<AudioParameterFloat>("InputGain_ID","InputGain",NormalisableRange<float>(0.0, 48.0,0.1),0.0),
-						  std::make_unique<AudioParameterFloat>("OutputGain_ID","OutputGain",NormalisableRange<float>(-48.0,0.0,0.1),0.0),
+						{ std::make_unique<AudioParameterFloat>("InputGain_ID","InputGain",NormalisableRange<float>(0.0, 48.0,0.1),10.0),
+						  std::make_unique<AudioParameterFloat>("OutputGain_ID","OutputGain",NormalisableRange<float>(-48.0,10,0.1),0.0),
 						  std::make_unique<AudioParameterFloat>("ToneControlle_ID","ToneControlle",NormalisableRange<float>(20.0, 20000.0, 6.0),10000)
 						}),
 					lowPassFilter(dsp::IIR::Coefficients< float >::makeLowPass((44100*4), 20000.0))
@@ -204,7 +204,10 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 			//Take the sample from the Audio Block
 			float in = blockOutput.getSample(channel, sample);
 			//Input Gain
-			in *= inputGainValue;
+			if (distortionType == 1 || distortionType == 2 || distortionType == 3) {
+				in *= inputGainValue;
+			}
+		
 			//Distortion Type
 			float out;
 			if (distortionType == 1) {
@@ -216,6 +219,7 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 					out = -threshold;
 				else
 					out = in;
+				
 			}
 			else if (distortionType == 2) {
 				// Soft clipping based on quadratic function
@@ -233,6 +237,7 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 					(2.0f + 3.0f*in)) / 3.0f;
 				else
 					out = 2.0f* in;
+				
 			}
 			else if (distortionType == 3)
 			{
@@ -241,6 +246,7 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 					out = 1.0f - expf(-in);
 				else
 					out = -1.0f + expf(in);
+			
 			}
 			else if (distortionType == 4) {
 				// Full-wave rectifier (absolute value)
@@ -253,9 +259,17 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 				else
 					out = 0;
 			}
-			//output gain with smoothing
-			parameterOutputGainSmoothed = parameterOutputGainSmoothed - 0.004*(parameterOutputGainSmoothed - outputGainValue);
+
+			//match output with input
+			if (distortionType==1 || distortionType==2 || distortionType==3) {
+				out *= (1 / (log(inputGainValue + 1) + 1));
+			}
+			
+			//Allow the user to modify the output level (smoothing)
+			parameterOutputGainSmoothed = parameterOutputGainSmoothed - 0.004*(parameterOutputGainSmoothed - outputGainValue);  
 			out *= parameterOutputGainSmoothed;
+
+
 			//Set the new sample in the audio block
 			blockOutput.setSample(channel, sample, out);
 		}

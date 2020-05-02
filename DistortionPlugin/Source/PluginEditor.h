@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "SliderLookAndFeel.h"
 
 //==============================================================================
 /**
@@ -44,7 +45,7 @@ private:
 	Label outputGainLabel;
 
 	Slider toneControlle;
-	Label toneControlleLabel;
+	Label cutOffLabel;
 	
 	ComboBox comboDistortioType;
 	Label comboLabel;
@@ -52,6 +53,11 @@ private:
 	std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> sliderAttachInputGain;
 	std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> sliderAttachOutputGain;
 	std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> sliderAttachToneControlle;
+
+	InputGainLookAndFeel inputGainLookAndFeel;
+	OutputGainLookAndFeel outputGainLookAndFeel;
+	RotaryLookAndFeel rotaryLookAndFeel;
+	comboBoxLookAndFeel comboBoxLookAndFeel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPluginAudioProcessorEditor)
 };
