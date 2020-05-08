@@ -27,9 +27,9 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	addAndMakeVisible(inputGain);
 	sliderAttachInputGain.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "InputGain_ID", inputGain));
 	inputGain.setLookAndFeel(&inputGainLookAndFeel);
-	inputGainLabel.setText("Input Gain", dontSendNotification);
-	inputGainLabel.setFont(Font("Strong Brain", 12, 1));
-	inputGainLabel.setColour(Label::textColourId, Colour(255, 6, 119));
+	inputGainLabel.setText(("Input Gain"), dontSendNotification);
+	inputGainLabel.setFont(Font("Multicolore", 12, 0));
+	inputGainLabel.setColour(Label::textColourId, Colour(255, 255, 255));
 	addAndMakeVisible(inputGainLabel);
 
 	// Output Gain
@@ -40,8 +40,8 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	sliderAttachOutputGain.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "OutputGain_ID", outputGain));
 	outputGain.setLookAndFeel(&outputGainLookAndFeel);
 	outputGainLabel.setText("Volume", dontSendNotification);
-	outputGainLabel.setFont(Font("Strong Brain", 12.0f, 1));
-	outputGainLabel.setColour(Label::textColourId, Colour(255, 6, 119));
+	outputGainLabel.setFont(Font("Multicolore", 12, 1));
+	outputGainLabel.setColour(Label::textColourId, Colour(242, 242, 242));
 	addAndMakeVisible(outputGainLabel);
 
 	// Tone Controlle
@@ -53,8 +53,8 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	sliderAttachToneControlle.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "ToneControlle_ID", toneControlle));
 	toneControlle.setLookAndFeel(&rotaryLookAndFeel);
 	cutOffLabel.setText("Tone Controlle", dontSendNotification);
-	cutOffLabel.setFont(Font("Strong Brain", 12.0f, 1));
-	cutOffLabel.setColour(Label::textColourId, Colour(255, 6, 119));
+	cutOffLabel.setFont(Font("Multicolore", 12, 1));
+	cutOffLabel.setColour(Label::textColourId, Colour(242, 242, 242));
 	addAndMakeVisible(cutOffLabel);
 	
 	// Combo menù
@@ -68,8 +68,32 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	comboDistortioType.setLookAndFeel(&comboBoxLookAndFeel);
 	comboDistortioType.addListener(this);
 	addAndMakeVisible(comboDistortioType);
-	comboDistortioType.setColour(ComboBox::textColourId, Colour(255, 6, 119));
-	comboDistortioType.setColour(ComboBox::arrowColourId, Colour(255, 6, 119));
+	comboDistortioType.setColour(ComboBox::textColourId, Colour(242, 242, 242));
+	//comboDistortioType.setColour(ComboBox::backgroundColourId, Colour(24, 57, 43));
+	comboDistortioType.setColour(ComboBox::focusedOutlineColourId, Colour(24, 57, 43));
+
+
+	//Buttons 
+	lpfPosition1.setButtonText("Pre");
+	lpfPosition1.setColour(TextButton::textColourOffId, Colour(255, 255, 255));
+	lpfPosition1.setColour(TextButton::textColourOnId, Colour(255, 255, 255));
+	lpfPosition1.setColour(TextButton::buttonColourId, Colour(59, 59, 59));
+	lpfPosition1.setColour(TextButton::buttonOnColourId, Colour(15, 167, 33));
+	lpfPosition1.setRadioGroupId(1, dontSendNotification);
+	lpfPosition1.setClickingTogglesState(true);
+	addAndMakeVisible(lpfPosition1);
+	lpfPosition1.addListener(this);
+
+	lpfPosition2.setButtonText("Post");
+	lpfPosition2.setColour(TextButton::textColourOffId, Colour(255, 255, 255));
+	lpfPosition2.setColour(TextButton::textColourOnId, Colour(255, 255, 255));
+	lpfPosition2.setColour(TextButton::buttonColourId, Colour(59, 59, 59));
+	lpfPosition2.setColour(TextButton::buttonOnColourId, Colour(15, 167, 33));
+	lpfPosition2.setRadioGroupId(1, dontSendNotification);
+	lpfPosition2.setClickingTogglesState(true);
+	lpfPosition2.setToggleState(true, dontSendNotification);
+	addAndMakeVisible(lpfPosition2);
+	lpfPosition2.addListener(this);
 }
 
 DistortionPluginAudioProcessorEditor::~DistortionPluginAudioProcessorEditor()
@@ -78,6 +102,7 @@ DistortionPluginAudioProcessorEditor::~DistortionPluginAudioProcessorEditor()
 	sliderAttachInputGain.reset();
 	sliderAttachOutputGain.reset();
 	sliderAttachToneControlle.reset();
+
 
 	inputGain.setLookAndFeel(nullptr);
 	outputGain.setLookAndFeel(nullptr);
@@ -89,13 +114,19 @@ DistortionPluginAudioProcessorEditor::~DistortionPluginAudioProcessorEditor()
 void DistortionPluginAudioProcessorEditor::paint (Graphics& g)
 {
     // Background
-    g.fillAll (Colour(0, 81, 255));
+    //g.fillAll (Colour(0,0,0));
+	Rectangle<int> area(getWidth(), getHeight());
+	ColourGradient gradiente(Colour(32, 32, 32), getWidth()/2 , (getHeight()/3)*1.85 , Colour(0,0,0), getWidth() / 10, getWidth() / 10, true);
+	//gradiente.isRadial = true;
+	g.setGradientFill(gradiente);
+	g.fillRect(area);
+
 	
 	//Title
-    g.setColour (Colour(255, 6, 119));
-    g.setFont (Font("Strong Brain",35.0f,1));
+    g.setColour (Colour(242, 242, 242));
+    g.setFont (Font("Slope Opera",35.0f,1));
 	Rectangle <int> title = getLocalBounds().removeFromTop(getHeight() / 5);
-	g.drawText("Distortion \'80", title, Justification::centred, true);
+	g.drawText("Distortion", title, Justification::centred, true);
 
 
 
@@ -104,20 +135,35 @@ void DistortionPluginAudioProcessorEditor::paint (Graphics& g)
 
 void DistortionPluginAudioProcessorEditor::resized()
 {
-	comboDistortioType.setBounds((getWidth() / 2 - getWidth() / 4) + 5 , 120, getWidth() / 2, getHeight() / 14);
+	comboDistortioType.setBounds((getWidth() / 2 - getWidth() / 4) + 5 , 90, getWidth() / 2, getHeight() / 14);
 	inputGain.setBounds(80, 87, 6, 220);
 	outputGain.setBounds(420,87,6,220);
-	toneControlle.setBounds(177,172,150,150);
+	toneControlle.setBounds(177,142,150,150);
 
 	inputGainLabel.setBounds(45, 310, 80, 40);
-	outputGainLabel.setBounds(395,310,60,40);
-	cutOffLabel.setBounds(213,310,80,40);
+	outputGainLabel.setBounds(395,310,70,40);
+	cutOffLabel.setBounds(204,310,100,40);
 
+	lpfPosition1.setBounds(getWidth()/2 - 38, 293 ,40,15);
+	lpfPosition2.setBounds(getWidth()/2 +3 , 293, 40, 15);
 }
 
 
 void DistortionPluginAudioProcessorEditor::sliderValueChanged(Slider *slider)
 {
+	
+}
+
+
+void DistortionPluginAudioProcessorEditor::buttonClicked(Button* button)
+{
+	
+	if (button == &lpfPosition1) {
+		processor.checkFilter = 0;
+	}
+	else if (button == &lpfPosition2) {
+		processor.checkFilter = 1;
+	}
 	
 }
 

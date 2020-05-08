@@ -14,12 +14,14 @@
 #include "PluginProcessor.h"
 #include "SliderLookAndFeel.h"
 
+
 //==============================================================================
 /**
 */
 class DistortionPluginAudioProcessorEditor  : public AudioProcessorEditor,
 											  public Slider::Listener,
-											  public ComboBox::Listener
+											  public ComboBox::Listener,
+											  public Button::Listener
 {
 public:
     DistortionPluginAudioProcessorEditor (DistortionPluginAudioProcessor&, AudioProcessorValueTreeState&);
@@ -30,6 +32,7 @@ public:
     void resized() override;
 
 	void sliderValueChanged(Slider *slider) override;
+	void buttonClicked(Button* button) override;
 	void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
 
 private:
@@ -58,6 +61,10 @@ private:
 	OutputGainLookAndFeel outputGainLookAndFeel;
 	RotaryLookAndFeel rotaryLookAndFeel;
 	comboBoxLookAndFeel comboBoxLookAndFeel;
+
+	TextButton lpfPosition1, lpfPosition2;
+
+	//Font* parameterFont;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPluginAudioProcessorEditor)
 };

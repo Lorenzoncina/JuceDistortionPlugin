@@ -14,20 +14,20 @@
 //==============================================================================
 DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", AudioChannelSet::stereo(), true)
-                     #endif
-                       ),
-					audioTree(*this, nullptr, Identifier("PARAMETERS"),
-						{ std::make_unique<AudioParameterFloat>("InputGain_ID","InputGain",NormalisableRange<float>(0.0, 48.0,0.1),10.0),
-						  std::make_unique<AudioParameterFloat>("OutputGain_ID","OutputGain",NormalisableRange<float>(-48.0,10,0.1),0.0),
-						  std::make_unique<AudioParameterFloat>("ToneControlle_ID","ToneControlle",NormalisableRange<float>(20.0, 20000.0, 6.0),10000)
-						}),
-					lowPassFilter(dsp::IIR::Coefficients< float >::makeLowPass((44100*4), 20000.0))
+	: AudioProcessor(BusesProperties()
+#if ! JucePlugin_IsMidiEffect
+#if ! JucePlugin_IsSynth
+		.withInput("Input", AudioChannelSet::stereo(), true)
+#endif
+		.withOutput("Output", AudioChannelSet::stereo(), true)
+#endif
+	),
+	audioTree(*this, nullptr, Identifier("PARAMETERS"),
+		{ std::make_unique<AudioParameterFloat>("InputGain_ID","InputGain",NormalisableRange<float>(0.0, 48.0,0.1),10.0),
+		  std::make_unique<AudioParameterFloat>("OutputGain_ID","OutputGain",NormalisableRange<float>(-48.0,10,0.1),0.0),
+		  std::make_unique<AudioParameterFloat>("ToneControlle_ID","ToneControlle",NormalisableRange<float>(20.0, 20000.0, 6.0),10000)
+		}),
+	lowPassFilter(dsp::IIR::Coefficients< float >::makeLowPass((44100*4), 20000.0))
 					
 #endif
 {
@@ -42,6 +42,7 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
 	toneControlleValue = 10000;
 
 	distortionType = 1;
+	
 }
 
 DistortionPluginAudioProcessor::~DistortionPluginAudioProcessor()
@@ -172,10 +173,11 @@ void DistortionPluginAudioProcessor::parameterChanged(const String &parameterID,
 		outputGainValue = pow(10, newValue / 20);
 		
 	}
-	else if (parameterID =="ToneControlle_ID") {
+	else if (parameterID == "ToneControlle_ID") {
 		toneControlleValue = newValue;
 	}
 
+	
 
 }
 
@@ -198,12 +200,18 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 	dsp::AudioBlock<float> blockInput(buffer);
 	dsp::AudioBlock<float> blockOutput = oversampling->processSamplesUp(blockInput);
 
+	//lowPassFilter (condition used to check if apply the filter before or after the distortion
+	if (checkFilter == 0) {
+		updateFilter();
+		lowPassFilter.process(dsp::ProcessContextReplacing<float>(blockOutput));
+	}
 
 	for (int channel = 0; channel < blockOutput.getNumChannels(); channel++) {
 		for (int sample = 0; sample < blockOutput.getNumSamples(); sample++) {
 			//Take the sample from the Audio Block
 			float in = blockOutput.getSample(channel, sample);
-			//Input Gain
+
+			//Input Gain (Not for Full wave and Half wave rectifier)
 			if (distortionType == 1 || distortionType == 2 || distortionType == 3) {
 				in *= inputGainValue;
 			}
@@ -276,9 +284,11 @@ void DistortionPluginAudioProcessor::processBlock (AudioBuffer<float>& buffer, M
 	}
 
 	
-	//lowPassFilter
-	updateFilter();
-	lowPassFilter.process(dsp::ProcessContextReplacing<float>(blockOutput));
+	//lowPassFilter (condition used to check if apply the filter before or after the distortion
+	if (checkFilter  == 1) {
+		updateFilter();
+		lowPassFilter.process(dsp::ProcessContextReplacing<float>(blockOutput));
+	}
 
 	//DownSampling
 	oversampling->processSamplesDown(blockInput);

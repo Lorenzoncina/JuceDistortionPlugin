@@ -72,6 +72,6 @@ public:
 private:
 	Font getCommonMenuFont()
 	{
-		return Font("Strong Brain", 17, 1);
+		return Font("Multicolore", 15, 1);
 	}
 };

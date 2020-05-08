@@ -61,8 +61,8 @@ public:
 	void updateFilter();
 
 	AudioProcessorValueTreeState audioTree;
-	int distortionType;
-
+	int distortionType, checkFilter;
+	
 	std::unique_ptr<dsp::Oversampling<float>> oversampling;
 	
 private:
