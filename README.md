@@ -3,6 +3,8 @@
 ## Project Description:
 Implement a distortion effect plugin. 
 
+![](Images/Gui.PNG)
+
 ## Input:
 The input is the waveform produced by an instrument (e.g. guitar).
 The output is the modified waveform after applying the distortion effect.
