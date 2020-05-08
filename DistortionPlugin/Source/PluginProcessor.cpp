@@ -42,6 +42,7 @@ DistortionPluginAudioProcessor::DistortionPluginAudioProcessor()
 	toneControlleValue = 10000;
 
 	distortionType = 1;
+	checkFilter = 1;
 	
 }
 

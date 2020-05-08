@@ -83,7 +83,7 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	lpfPosition1.setClickingTogglesState(true);
 	addAndMakeVisible(lpfPosition1);
 	lpfPosition1.addListener(this);
-
+	
 	lpfPosition2.setButtonText("Post");
 	lpfPosition2.setColour(TextButton::textColourOffId, Colour(255, 255, 255));
 	lpfPosition2.setColour(TextButton::textColourOnId, Colour(255, 255, 255));
