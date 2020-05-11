@@ -22,3 +22,6 @@ feed a wav file as input to your plugin.
 - a more detailed report in which you illustrate your audio plugin and its
 implementation (max 8 pages).
 - a link to a repository containing the code (e.g. on GitHub) with minimal comments.
+
+## Report (WIP)
+The report source can be found over at [Overleaf](https://www.overleaf.com/7977586355htyzcgvxndwf).
