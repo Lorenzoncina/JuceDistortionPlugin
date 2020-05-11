@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="EpbsUZ" name="DistortionPlugin" projectType="audioplug" jucerVersion="5.4.7">
+<JUCERPROJECT id="EpbsUZ" name="DistortionPlugin" projectType="audioplug" jucerVersion="5.4.7"
+              companyName="Lorenzo Concina">
   <MAINGROUP id="wlahAI" name="DistortionPlugin">
     <GROUP id="{25C072B7-8F07-C087-53F9-000921A70D49}" name="Source">
       <FILE id="XGBoet" name="PluginProcessor.cpp" compile="1" resource="0"
