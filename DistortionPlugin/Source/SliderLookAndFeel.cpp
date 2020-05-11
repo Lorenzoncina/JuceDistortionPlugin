@@ -111,7 +111,7 @@ void RotaryLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width, i
 	g.setFont(Font("Calibri", 30.0f, 1)); 
 	g.setColour(Colour(242, 242, 242));
 	
-	g.drawSingleLineText(String(slider.getValue()), centerX, centerY+5, Justification::horizontallyJustified);
+	g.drawSingleLineText(String(slider.getValue()).operator+=(" Hz"), centerX, centerY+5, Justification::horizontallyJustified);
 }
 
 
