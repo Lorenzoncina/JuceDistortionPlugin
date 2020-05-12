@@ -1,6 +1,6 @@
 # README
 
-## Project Description:
+## Project Description
 Implement a distortion effect plugin. 
 
 ![](Images/Gui.PNG)
