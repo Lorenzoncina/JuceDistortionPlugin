@@ -52,7 +52,7 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
 	addAndMakeVisible(toneControlle);
 	sliderAttachToneControlle.reset(new AudioProcessorValueTreeState::SliderAttachment(audioTree, "ToneControlle_ID", toneControlle));
 	toneControlle.setLookAndFeel(&rotaryLookAndFeel);
-	cutOffLabel.setText("Tone Controlle", dontSendNotification);
+	cutOffLabel.setText("Tone Control", dontSendNotification);
 	cutOffLabel.setFont(Font("Multicolore", 12, 1));
 	cutOffLabel.setColour(Label::textColourId, Colour(242, 242, 242));
 	addAndMakeVisible(cutOffLabel);
