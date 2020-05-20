@@ -11,7 +11,7 @@ Further details on the implementation are avaible on the Report.
 ![](Images/Gui.PNG)
 
 ## Audio Example
-![test audio](https://raw.githubusercontent.com/Lorenzoncina/JuceDistortionPlugin/master/Examples/Alesis-Fusion-C3%20-%20Clean.wav)
+<audio src="https://raw.githubusercontent.com/Lorenzoncina/JuceDistortionPlugin/master/Examples/Alesis-Fusion-C3%20-%20Clean.wav"></audio>
 
 ## Report (WIP)
 The report source can be found over at [Overleaf](https://www.overleaf.com/7977586355htyzcgvxndwf).
