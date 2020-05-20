@@ -11,6 +11,7 @@ Further details on the implementation are avaible on the Report.
 ![](Images/Gui.PNG)
 
 ## Audio Example
+![test audio](https://github.com/Lorenzoncina/JuceDistortionPlugin/blob/master/Examples/Alesis%20Fusion%20-%20C3%20-%20Distorted%20(Exponential).wav)
 
 ## Report (WIP)
 The report source can be found over at [Overleaf](https://www.overleaf.com/7977586355htyzcgvxndwf).
