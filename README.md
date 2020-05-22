@@ -17,4 +17,4 @@ Further details on the implementation are avaible on the Report.
 
 
 ## Report
-The report source can be found over at [PDF](docs/CMLS_HW2_DistortionPlugin.pdf).
+The report source can be found over at [PDF](https://lorenzoncina.github.io/JuceDistortionPlugin/CMLS_HW2_DistortionPlugin.pdf).
