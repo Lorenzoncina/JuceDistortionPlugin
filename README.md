@@ -16,5 +16,5 @@ Further details on the implementation are avaible on the Report.
 - [Piano samples with Post LPF](https://raw.githubusercontent.com/Lorenzoncina/JuceDistortionPlugin/master/Examples/mp4/Kawaii%20-%20K11%20-%20Distorted%20(Full%20wave%20rectifier)%20with%20'Post'%20LPF.m4a)
 
 
-## Report (WIP)
-The report source can be found over at [PDF](https://tinyurl.com/ycb2gul4).
+## Report
+The report source can be found over at [PDF](docs/CMLS_HW2_DistortionPlugin.pdf).
